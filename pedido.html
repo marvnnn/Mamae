@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Seu pedido · LauSemijoias</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root { --black: #000; --gold: #C9A84C; --gold-l: #E3C878; --gold-d: #8E7330; --ivory: #EDE6D6; --muted: #9C9484; --rule: rgba(201,168,76,.26); }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--black); color: var(--ivory); font-family: 'Hanken Grotesk', system-ui, sans-serif; line-height: 1.55; }
+    :focus-visible { outline: 2px solid var(--gold-l); outline-offset: 3px; }
+    header { border-bottom: 1px solid var(--rule); padding: 16px 24px; }
+    .logo { font-family: 'Bodoni Moda', serif; font-size: 26px; color: var(--gold-l); text-decoration: none; }
+    .logo i { color: var(--ivory); }
+    main { max-width: 620px; margin: 0 auto; padding: 56px 24px 80px; }
+    .num { color: var(--muted); font-size: 15px; margin-bottom: 8px; }
+    h1 { font-family: 'Bodoni Moda', serif; font-weight: 400; font-size: clamp(32px, 6vw, 46px); line-height: 1.08; margin-bottom: 16px; }
+    .lead { color: var(--muted); font-size: 17px; max-width: 46ch; margin-bottom: 32px; }
+    .box { border: 1px solid var(--rule); padding: 20px; margin-bottom: 24px; }
+    .row { display: flex; justify-content: space-between; gap: 16px; padding: 6px 0; }
+    .row span:first-child { color: var(--muted); }
+    .tot { border-top: 1px solid var(--rule); margin-top: 8px; padding-top: 12px; font-weight: 700; color: var(--gold-l); font-size: 18px; }
+    .tot span:first-child { color: var(--gold-l); }
+    .btn { display: inline-flex; background: var(--gold); color: var(--black); font-weight: 600; padding: 14px 24px; text-decoration: none; margin: 0 10px 10px 0; }
+    .btn.ghost { background: transparent; border: 1px solid var(--gold-d); color: var(--gold-l); }
+  </style>
+</head>
+<body>
+  <header><a class="logo" href="index.html" aria-label="LauSemijoias">Lau<i>Semijoias</i></a></header>
+  <main id="out" aria-live="polite"><h1>Consultando seu pedido…</h1></main>
+  <script src="loja-config.js"></script>
+  <script>
+    (function () {
+      const CFG = window.LOJA_CONFIG || {};
+      const out = document.getElementById('out');
+      const money = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      const id = new URLSearchParams(location.search).get('id');
+      const whats = CFG.whatsapp ? `<a class="btn ghost" href="https://wa.me/${CFG.whatsapp.replace(/\D/g, '')}" target="_blank" rel="noopener">Falar com a Lau</a>` : '';
+      const TEXT = {
+        pago: ['Pagamento confirmado', 'Obrigada! A Lau já recebeu seu pedido e vai separar as peças. As novidades da entrega chegam pelo WhatsApp e pelo e-mail.'],
+        aguardando_pagamento: ['Aguardando o pagamento', 'No Pix, a confirmação costuma chegar em poucos minutos, e esta página se atualiza sozinha. As peças ficam reservadas para você por 30 minutos.'],
+        enviado: ['Pedido a caminho', 'Suas peças já foram enviadas.'],
+        entregue: ['Pedido entregue', 'Esperamos que você ame suas peças.'],
+        cancelado: ['Pedido cancelado', 'O pagamento não foi concluído e as peças voltaram para a vitrine. Se quiser, monte a sacola de novo.'],
+        problema: ['Pagamento recebido', 'Uma das peças foi vendida no balcão antes da confirmação. A Lau vai falar com você pelo WhatsApp para trocar a peça ou devolver o valor.'],
+      };
+
+      function render(p) {
+        if (!p) {
+          out.innerHTML = `<h1>Não encontramos esse pedido</h1><p class="lead">Confira o link que chegou no seu e-mail ou fale com a Lau pelo WhatsApp.</p><a class="btn" href="index.html">Voltar para a loja</a>${whats}`;
+          return;
+        }
+        const [title, lead] = TEXT[p.status] || TEXT.aguardando_pagamento;
+        document.title = `${title} · LauSemijoias`;
+        out.innerHTML = `
+          <p class="num">Pedido ${esc(p.numero)}</p>
+          <h1>${title}</h1>
+          <p class="lead">${lead}</p>
+          <div class="box">
+            ${p.itens.map(i => `<div class="row"><span>${esc(i.nome)} · ${esc(i.codigo)}</span><span>${money(i.preco)}</span></div>`).join('')}
+            <div class="row"><span>${esc(p.entrega)}</span><span>${money(p.frete)}</span></div>
+            ${p.rastreio ? `<div class="row"><span>Rastreio</span><span>${esc(p.rastreio)}</span></div>` : ''}
+            <div class="row tot"><span>Total</span><span>${money(p.total)}</span></div>
+          </div>
+          <a class="btn" href="index.html">Voltar para a loja</a>${whats}`;
+      }
+
+      async function check() {
+        if (!id || !CFG.apiBase) return render(null);
+        try {
+          const r = await fetch(`${CFG.apiBase}/pedido?id=${encodeURIComponent(id)}`);
+          if (!r.ok) throw new Error();
+          const p = await r.json();
+          render(p);
+          if (p.status === 'aguardando_pagamento') setTimeout(check, 8000);
+          if (['pago', 'enviado', 'entregue', 'problema'].includes(p.status)) localStorage.removeItem('lauSemijoiasSacola');
+        } catch { render(null); }
+      }
+      check();
+    })();
+  </script>
+</body>
+</html>
