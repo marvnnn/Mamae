@@ -389,7 +389,24 @@
         });
       };
 
-      const value = { jewelry, sales, addJewelry, updateJewelry, deleteJewelry, markAsSold, markAsAvailable, addSale, getDashboardData, getNextCode, loading, exportData, importData };
+      // Gerar catálogo público para a loja (loja.html). Nunca inclui preço de custo nem vendas.
+      const exportCatalog = (whatsapp) => {
+        const produtos = jewelry
+          .filter(j => j.status === 'available')
+          .map(({ id, code, name, type, material, description, sellPrice, createdAt }) => ({ id, code, name, type, material, description, sellPrice, createdAt }));
+        const data = { geradoEm: new Date().toISOString(), whatsapp, produtos };
+        const content = `// Gerado pelo painel Lau SemiJoias. Substitua este arquivo sempre que atualizar o estoque.\nwindow.CATALOGO = ${JSON.stringify(data, null, 2)};\n`;
+        const blob = new Blob([content], { type: 'text/javascript' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'catalogo.js';
+        a.click();
+        URL.revokeObjectURL(url);
+        return produtos.length;
+      };
+
+      const value = { jewelry, sales, addJewelry, updateJewelry, deleteJewelry, markAsSold, markAsAvailable, addSale, getDashboardData, getNextCode, loading, exportData, importData, exportCatalog };
       return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
     }
 
@@ -855,9 +872,18 @@
     }
 
     function SettingsPage() {
-      const { exportData, importData } = useApp();
+      const { exportData, importData, exportCatalog } = useApp();
       const [toast, setToast] = useState(null);
       const [importing, setImporting] = useState(false);
+      const [whatsapp, setWhatsapp] = useState(() => localStorage.getItem('lojaWhatsapp') || '');
+
+      const handleCatalog = () => {
+        const digits = whatsapp.replace(/\D/g, '');
+        if (digits.length < 12) { setToast({ message: 'Informe o WhatsApp com DDI e DDD (ex: 55 31 99999-9999)', type: 'error' }); return; }
+        localStorage.setItem('lojaWhatsapp', digits);
+        const count = exportCatalog(digits);
+        setToast({ message: `Catálogo gerado com ${count} peça(s)! Coloque o catalogo.js ao lado do loja.html.`, type: 'success' });
+      };
 
       const handleExport = () => {
         exportData();
@@ -900,6 +926,21 @@
                 {importing ? 'Importando...' : 'Importar Dados'}
                 <input type="file" accept=".json" onChange={handleImport} style={{ display: 'none' }} disabled={importing} />
               </label>
+            </div>
+          </div>
+          <div className="card" style={{ marginTop: 24 }}>
+            <h3 style={{ color: '#c9a84c', marginBottom: 16 }}>🛍️ Loja Online</h3>
+            <p style={{ color: '#888888', marginBottom: 20, fontSize: 14, lineHeight: 1.7 }}>
+              Gera o arquivo <strong>catalogo.js</strong> com as peças disponíveis (sem preço de custo) para a página das clientes (<strong>loja.html</strong>).
+              Gere de novo sempre que cadastrar ou vender peças e substitua o arquivo antigo.
+            </p>
+            <div className="form-group">
+              <label className="form-label">WhatsApp da loja (com DDI e DDD)</label>
+              <input type="tel" className="form-input" value={whatsapp} onChange={e => setWhatsapp(e.target.value)} placeholder="55 31 99999-9999" />
+            </div>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <button className="btn btn-primary" onClick={handleCatalog}>Gerar Catálogo da Loja</button>
+              <a className="btn btn-secondary" href="loja.html" target="_blank" rel="noopener" style={{ textDecoration: 'none' }}>Ver Loja</a>
             </div>
           </div>
           <div className="card" style={{ marginTop: 24 }}>
