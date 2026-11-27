@@ -115,9 +115,8 @@ Por ser só um arquivo HTML, dá para publicar de graça no **GitHub Pages**:
 
 1. No GitHub, abra o repositório e vá em **Settings → Pages**.
 2. Em **Source**, escolha **Deploy from a branch**, branch `main` e pasta `/ (root)`.
-3. Salve. Em alguns minutos o site fica disponível em `https://<seu-usuario>.github.io/<nome-do-repositorio>/`.
+3. Salve. Em alguns minutos o site fica disponível em `https://marvnnn.github.io/Mamae/`.
 
-O GitHub Pages só publica repositórios privados em planos pagos; num repositório público funciona no plano gratuito.
 Mesmo online, cada pessoa continua com os dados guardados no próprio navegador.
 
 ## Tecnologias
