@@ -87,9 +87,12 @@
     bag = bag.filter(id => products.some(p => p.id === id));
     saveBag();
 
-    const withPhoto = products.find(p => p.fotos && p.fotos[0]);
-    $('heroPhoto').innerHTML = withPhoto ? `<img src="${esc(withPhoto.fotos[0])}" alt="">` : '<img class="brand" src="img/marca.svg" alt="Marca LauSemijoias">';
-    if (CFG.whatsapp) $('footContact').innerHTML = `Dúvidas? <a href="https://wa.me/${digits(CFG.whatsapp)}" target="_blank" rel="noopener">Fale com a Lau no WhatsApp</a>`;
+    if (CFG.whatsapp) {
+      const wa = `https://wa.me/${digits(CFG.whatsapp)}?text=${encodeURIComponent('Olá, Lau! Vim pela loja online.')}`;
+      $('footContact').innerHTML = `<a href="${wa}" target="_blank" rel="noopener">Fale com a Lau no WhatsApp</a>`;
+      Object.assign($('heroWhats'), { href: wa, target: '_blank', rel: 'noopener' });
+      $('heroWhats').textContent = 'Fale com a Lau no WhatsApp';
+    }
     renderTabs();
     renderGrid();
     renderBagCount();
@@ -116,8 +119,19 @@
 
   function inst(v) { return v >= 30 ? `ou ${PARC}x de ${money(v / PARC)} no cartão` : 'no Pix ou no cartão'; }
 
+  // Peça cadastrada nos últimos 21 dias ganha o selo "Novo".
+  const isNew = (p) => p.createdAt && (Date.now() - new Date(p.createdAt).getTime()) < 21 * 864e5;
+
+  function renderCount(n) {
+    const total = products.length;
+    $('collectionCount').textContent = !total ? 'Novas peças em breve.'
+      : n === total ? `${total} ${total === 1 ? 'peça disponível' : 'peças disponíveis'}. Cada uma é única.`
+      : `${n} de ${total} peças`;
+  }
+
   function renderGrid() {
     const l = list();
+    renderCount(l.length);
     if (!products.length) {
       $('grid').innerHTML = `<div class="empty"><h3>A coleção está sendo fotografada</h3><p>As peças aparecem aqui em breve. Enquanto isso, fale com a Lau pelo WhatsApp para ver o que está disponível.</p></div>`;
       return;
@@ -129,10 +143,11 @@
     $('grid').innerHTML = l.map(p => {
       const has = bag.includes(p.id);
       return `<article class="piece">
-        <div class="piece-photo">
-          <button style="position:absolute;inset:0" data-open="${esc(p.id)}" aria-label="Ver ${esc(p.name)}"></button>
+        <div class="case">
+          <button class="open" data-open="${esc(p.id)}" aria-label="Ver detalhes: ${esc(p.name)}"></button>
           ${photo(p)}
-          <button class="quick" data-add="${esc(p.id)}" aria-pressed="${has}" aria-label="${has ? 'Tirar da sacola' : 'Pôr na sacola'}: ${esc(p.name)}">${has ? ICON_CHECK : ICON_PLUS}</button>
+          ${isNew(p) ? '<span class="badge">Novo</span>' : ''}
+          <button class="quick" data-add="${esc(p.id)}" aria-pressed="${has}" aria-label="${has ? 'Tirar da sacola' : 'Pôr na sacola'}: ${esc(p.name)}">${has ? ICON_CHECK : ICON_PLUS}<span>${has ? 'Na sacola' : 'Pôr na sacola'}</span></button>
         </div>
         <div class="label">
           <h3><button data-open="${esc(p.id)}">${esc(p.name)}</button></h3>
@@ -142,8 +157,6 @@
         </div>
       </article>`;
     }).join('');
-    // a imagem fica por baixo do botão invisível; o botão rápido por cima
-    document.querySelectorAll('.piece-photo img, .piece-photo .art').forEach(el => { el.style.pointerEvents = 'none'; });
   }
 
   // ---------- Detalhe ----------
@@ -208,8 +221,10 @@
 
   function renderBagCount() {
     const n = bagItems().length;
-    $('bagCount').textContent = n;
-    if (n) $('bagCount').removeAttribute('data-zero'); else $('bagCount').setAttribute('data-zero', '');
+    const el = $('bagCount');
+    if (el.textContent !== String(n)) { el.classList.add('bump'); setTimeout(() => el.classList.remove('bump'), 250); }
+    el.textContent = n;
+    if (n) el.removeAttribute('data-zero'); else el.setAttribute('data-zero', '');
   }
 
   function openSheet() {
