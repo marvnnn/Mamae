@@ -88,7 +88,7 @@
     saveBag();
 
     const withPhoto = products.find(p => p.fotos && p.fotos[0]);
-    $('heroPhoto').innerHTML = withPhoto ? `<img src="${esc(withPhoto.fotos[0])}" alt="">` : art('Anel');
+    $('heroPhoto').innerHTML = withPhoto ? `<img src="${esc(withPhoto.fotos[0])}" alt="">` : '<img class="brand" src="img/marca.svg" alt="Marca LauSemijoias">';
     if (CFG.whatsapp) $('footContact').innerHTML = `Dúvidas? <a href="https://wa.me/${digits(CFG.whatsapp)}" target="_blank" rel="noopener">Fale com a Lau no WhatsApp</a>`;
     renderTabs();
     renderGrid();

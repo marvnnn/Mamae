@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LauSemijoias · Painel</title>
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -128,7 +129,7 @@
 <body>
   <div id="root">
     <div class="loading" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;">
-      <div class="loading-icon" style="font-size:64px;margin-bottom:20px;animation:pulse 2s ease infinite;">💎</div>
+      <img src="img/marca-icone.svg" alt="" style="width:96px;margin-bottom:20px;">
       <div class="loading-text" style="font-family:'Playfair Display',serif;font-size:24px;letter-spacing:2px;color:#c9a84c;">LauSemijoias</div>
     </div>
   </div>
@@ -428,8 +429,7 @@
       return (
         <aside className="sidebar">
           <div className="logo">
-            <div className="logo-icon">💎</div>
-            <div className="logo-text">LauSemijoias</div>
+            <img src="img/marca.svg" alt="LauSemijoias" style={{ width: '100%', maxWidth: 200, display: 'block', margin: '0 auto' }} />
           </div>
           <ul className="nav-menu">
             {navItems.map(item => (
@@ -989,7 +989,7 @@
         return (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#0a0a0a' }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '64px', marginBottom: '20px', animation: 'pulse 2s ease infinite' }}>💎</div>
+              <img src="img/marca-icone.svg" alt="" style={{ width: 96, marginBottom: 20 }} />
               <div style={{ fontFamily: 'Montserrat', fontSize: '24px', letterSpacing: '2px', color: '#c9a84c' }}>LauSemijoias</div>
               <div style={{ marginTop: '20px', color: '#888888' }}>Carregando...</div>
             </div>

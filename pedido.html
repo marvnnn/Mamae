@@ -5,17 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex">
   <title>Seu pedido · LauSemijoias</title>
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Josefin+Sans:wght@600&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root { --black: #000; --gold: #C9A84C; --gold-l: #E3C878; --gold-d: #8E7330; --ivory: #EDE6D6; --muted: #9C9484; --rule: rgba(201,168,76,.26); }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: var(--black); color: var(--ivory); font-family: 'Hanken Grotesk', system-ui, sans-serif; line-height: 1.55; }
     :focus-visible { outline: 2px solid var(--gold-l); outline-offset: 3px; }
     header { border-bottom: 1px solid var(--rule); padding: 16px 24px; }
-    .logo { font-family: 'Bodoni Moda', serif; font-size: 26px; color: var(--gold-l); text-decoration: none; }
-    .logo i { color: var(--ivory); }
+    .logo { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; color: var(--gold-l); }
+    .logo img { height: 42px; width: auto; }
+    .logo span { font-family: 'Josefin Sans', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: .22em; padding-top: 3px; }
     main { max-width: 620px; margin: 0 auto; padding: 56px 24px 80px; }
     .num { color: var(--muted); font-size: 15px; margin-bottom: 8px; }
     h1 { font-family: 'Bodoni Moda', serif; font-weight: 400; font-size: clamp(32px, 6vw, 46px); line-height: 1.08; margin-bottom: 16px; }
@@ -30,7 +32,7 @@
   </style>
 </head>
 <body>
-  <header><a class="logo" href="index.html" aria-label="LauSemijoias">Lau<i>Semijoias</i></a></header>
+  <header><a class="logo" href="index.html" aria-label="LauSemijoias"><img src="img/marca-icone.svg" alt=""><span>SEMI JÓIAS</span></a></header>
   <main id="out" aria-live="polite"><h1>Consultando seu pedido…</h1></main>
   <script src="loja-config.js"></script>
   <script>

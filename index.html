@@ -6,9 +6,16 @@
   <title>LauSemijoias · Prata 925 e semijoias em Brumadinho</title>
   <meta name="description" content="Prata 925 e semijoias escolhidas pela Lau. Entrega em Brumadinho por R$ 10 e envio pelos Correios para todo o Brasil.">
   <meta name="theme-color" content="#000000">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="LauSemijoias">
+  <meta property="og:description" content="Prata 925 e semijoias escolhidas pela Lau. Entrega em Brumadinho e envio para todo o Brasil.">
+  <meta property="og:image" content="img/compartilhar.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Josefin+Sans:wght@600&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --black: #000000;
@@ -42,9 +49,10 @@
 
     /* Cabeçalho */
     .top { position: sticky; top: 0; z-index: 40; background: rgba(0, 0, 0, .9); backdrop-filter: blur(8px); border-bottom: 1px solid var(--rule); }
-    .top-in { max-width: var(--wrap); margin: 0 auto; padding: 16px 24px; display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
-    .logo { font-family: var(--serif); font-size: 26px; color: var(--gold-l); text-decoration: none; letter-spacing: .3px; }
-    .logo i { color: var(--ivory); font-style: italic; }
+    .top-in { max-width: var(--wrap); margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .logo { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; color: var(--gold-l); }
+    .logo img { height: 42px; width: auto; }
+    .logo span { font-family: 'Josefin Sans', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: .22em; padding-top: 3px; }
     .bag-btn { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 500; padding: 4px 0; }
     .bag-btn svg { width: 20px; height: 20px; align-self: center; }
     .bag-btn .n { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--gold); color: var(--black); font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
@@ -56,6 +64,7 @@
     .hero-photo img { width: 100%; height: 100%; object-fit: cover; }
     .hero-photo .art { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
     .hero-photo .art svg { width: 46%; opacity: .75; }
+    .hero-photo .brand { object-fit: contain; padding: 12%; }
     .hero h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(38px, 5.4vw, 68px); line-height: 1.02; letter-spacing: -.5px; margin-bottom: 24px; max-width: 12ch; }
     .hero p { color: var(--muted); font-size: 17px; line-height: 1.6; max-width: 38ch; margin-bottom: 28px; }
     .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--gold); color: var(--black); font-weight: 600; font-size: 15px; padding: 14px 24px; text-decoration: none; transition: background .2s; }
@@ -212,6 +221,8 @@
       .detail-info { padding: 24px 20px 28px; }
       .detail-info h2 { font-size: 28px; }
       .top-in { padding: 14px 20px; }
+      .logo img { height: 34px; }
+      .logo span { font-size: 13px; }
     }
   </style>
 </head>
@@ -220,7 +231,7 @@
 
   <header class="top">
     <div class="top-in">
-      <a class="logo" href="#" aria-label="LauSemijoias">Lau<i>Semijoias</i></a>
+      <a class="logo" href="#" aria-label="LauSemijoias"><img src="img/marca-icone.svg" alt=""><span>SEMI JÓIAS</span></a>
       <button class="bag-btn" id="openBag" aria-label="Abrir sacola">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
         Sacola <span class="n" id="bagCount">0</span>

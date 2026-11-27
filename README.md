@@ -14,6 +14,7 @@ O design e as decisões do projeto estão em [`docs/superpowers/specs/2026-11-27
 | `index.html`, `loja.js`, `loja-config.js` | A loja. A configuração pública (Supabase, WhatsApp) fica em `loja-config.js`. |
 | `pedido.html` | Página que a cliente vê depois de pagar (acompanha a situação do pedido). |
 | `privacidade.html` | Política de privacidade (LGPD). |
+| `img/` | Marca em vetor (`marca.svg`, `marca-icone.svg`, `favicon.svg`) e a imagem que aparece ao compartilhar o link (`compartilhar.jpg`). |
 | `api/` | Funções do servidor (Vercel): frete, checkout, webhook do Mercado Pago e consulta de pedido. |
 | `supabase/schema.sql` | Banco de dados: tabelas, regras de acesso e funções de reserva e confirmação. |
 | `painel.html` | Painel da Lau (por enquanto salva no navegador, em IndexedDB). |
