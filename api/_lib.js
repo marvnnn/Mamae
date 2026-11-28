@@ -8,7 +8,7 @@
 //   CONTATO_EMAIL                                   e-mail técnico exigido pelo Melhor Envio no User-Agent
 //   SITE_URL                                        ex.: https://lausemijoias.com.br (sem barra no fim)
 
-const CIDADE_LOCAL = { nome: 'Brumadinho', uf: 'MG', taxa: 0 }; // TESTE: voltar para 10 depois
+const CIDADE_LOCAL = { nome: 'Brumadinho', uf: 'MG', taxa: 10 };
 // CEP de onde as encomendas saem (rua da agência dos Correios no Centro de Brumadinho).
 // Precisa ser CEP de rua: os terminados em 9xx (agência, caixa postal) são recusados pelo Melhor Envio.
 const CEP_ORIGEM = '32480030';
