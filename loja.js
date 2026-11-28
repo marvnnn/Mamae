@@ -8,7 +8,7 @@
   const FORM_KEY = 'lauSemijoiasCliente';
   const $ = (id) => document.getElementById(id);
   const money = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  const shipPrice = (o) => o.combinar ? 'A combinar' : money(o.preco);
+  const shipPrice = (o) => o.combinar ? 'A combinar' : (o.preco ? money(o.preco) : 'Grátis');
   const fmtCep = (c) => c.length === 8 ? `${c.slice(0, 5)}-${c.slice(5)}` : c;
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const digits = (s) => String(s || '').replace(/\D/g, '');
@@ -182,7 +182,7 @@
         <button class="btn ${has ? 'ghost' : ''}" data-add="${esc(p.id)}">${has ? 'Tirar da sacola' : 'Pôr na sacola'}</button>
         <ul>
           <li>Peça única: depois de vendida, sai da vitrine.</li>
-          <li>Entrega em ${esc(LOCAL.nome)} por ${money(LOCAL.taxa)} ou Correios para o Brasil todo.</li>
+          <li>Entrega em ${esc(LOCAL.nome)} ${LOCAL.taxa ? `por ${money(LOCAL.taxa)}` : 'grátis'} ou Correios para o Brasil todo.</li>
         </ul>
       </div>`;
     if (!$('detail').classList.contains('open')) lastFocus = document.activeElement;

@@ -9,7 +9,7 @@
 //   CONTATO_EMAIL                                   e-mail técnico exigido pelo Melhor Envio no User-Agent
 //   SITE_URL                                        ex.: https://lausemijoias.com.br (sem barra no fim)
 
-const CIDADE_LOCAL = { nome: 'Brumadinho', uf: 'MG', taxa: 10 };
+const CIDADE_LOCAL = { nome: 'Brumadinho', uf: 'MG', taxa: 0 }; // TESTE: voltar para 10 depois
 const RESERVA_MINUTOS = 30;
 const PARCELAS_MAX = 6;
 // Caixa pequena para joias (mínimo aceito pelos Correios), em cm.
