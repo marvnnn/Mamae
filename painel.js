@@ -799,7 +799,23 @@
   addEventListener('appinstalled', () => { APP.prompt = null; APP.instalado = true; if (S.pagina === 'ajustes') render(); toast('Aplicativo instalado. Procure "Painel Lau" na tela inicial.'); });
 
   const ACOES = {
-    instalar: async () => { if (!APP.prompt) return; APP.prompt.prompt(); await APP.prompt.userChoice.catch(() => {}); APP.prompt = null; if (S.pagina === 'ajustes') render(); },
+    // O pedido de instalação do Chrome só pode ser usado uma vez e às vezes falha em silêncio:
+    // por isso avisa na hora, mostra o caminho pelo menu se der erro e sempre tira o botão depois.
+    instalar: async () => {
+      const ev = APP.prompt;
+      if (!ev) return;
+      APP.prompt = null;
+      toast('Abrindo a instalação…');
+      try {
+        await ev.prompt();
+        await ev.userChoice;
+      } catch (err) {
+        console.error('instalar', err);
+        toast('Não abriu por aqui. No Chrome, toque no menu ⋮ e em "Instalar app".', true);
+      } finally {
+        if (S.pagina === 'ajustes') render();
+      }
+    },
     nova: () => abrirEditor(null),
     editar: (b) => abrirEditor(porId(b.dataset.id)),
     fst: (b) => { S.filtro.st = b.dataset.k; document.querySelectorAll('[data-act=fst]').forEach(x => x.setAttribute('aria-pressed', x === b)); renderLista(); },
