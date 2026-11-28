@@ -13,7 +13,8 @@
   const moneyInput = (v) => (v || v === 0) && Number(v) > 0 ? Number(v).toFixed(2).replace('.', ',') : '';
   const data = (iso, o) => iso ? new Date(iso).toLocaleDateString('pt-BR', o || { day: '2-digit', month: '2-digit', year: 'numeric' }) : '';
   const hora = (iso) => iso ? new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
-  const RECUPERANDO = /type=recovery/.test(location.hash);
+  // Link de convite ou de "esqueci minha senha": a pessoa chega logada e precisa criar a senha.
+  const RECUPERANDO = /type=(recovery|invite)/.test(location.hash);
 
   const ic = (d) => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
   const I = {
