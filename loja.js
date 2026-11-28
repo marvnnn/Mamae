@@ -334,10 +334,11 @@
           <p class="hint">Para o comprovante e o código de rastreio.</p></div>
         ${checkout.payError ? `<p class="notice warn" role="alert">${checkout.payError}</p>` : ''}
         <p class="hint">Ao continuar, você concorda com a <a href="privacidade.html" target="_blank">política de privacidade</a>. Usamos seus dados só para entregar o pedido.</p>`;
-      const payLabel = online() ? `Pagar ${money(subtotal() + checkout.ship.preco)}` : 'Enviar pedido pelo WhatsApp';
+      const pagaOnline = online() && !checkout.ship.combinar;
+      const payLabel = pagaOnline ? `Pagar ${money(subtotal() + checkout.ship.preco)}` : 'Enviar pedido pelo WhatsApp';
       $('sheetFoot').innerHTML = `${summary()}
         <div class="row2"><button class="btn ghost" data-step="ship">Voltar</button><button class="btn" id="payBtn" ${checkout.paying ? 'disabled' : ''}>${checkout.paying ? 'Abrindo pagamento…' : payLabel}</button></div>
-        <p class="fine">${online() ? `${ICON_LOCK}Pix ou cartão em até ${PARC}x, no ambiente seguro do Mercado Pago` : 'Prévia da loja: o pagamento online entra quando o servidor for configurado'}</p>`;
+        <p class="fine">${pagaOnline ? `${ICON_LOCK}Pix ou cartão em até ${PARC}x, no ambiente seguro do Mercado Pago` : 'A Lau confirma o frete e o pagamento com você pelo WhatsApp'}</p>`;
       ['nome', 'whats', 'email'].forEach(k => $(k).addEventListener('input', (e) => {
         cliente[k === 'whats' ? 'whatsapp' : k] = e.target.value;
         localStorage.setItem(FORM_KEY, JSON.stringify(cliente));
@@ -373,16 +374,19 @@
         checkout.opts = d.opcoes;
         if (!checkout.opts.length) checkout.shipError = 'Os Correios não atendem esse CEP no momento. Fale com a Lau pelo WhatsApp para combinar outra forma.';
       } catch {
-        checkout.shipError = 'Não conseguimos calcular o frete agora. Tente de novo em alguns minutos.';
+        // Sem cotação dos Correios (Melhor Envio fora do ar ou ainda não configurado): o pedido segue pelo WhatsApp.
+        checkout.opts = [FRETE_COMBINAR];
       }
     } else {
-      checkout.opts = [{ id: 'correios-combinar', nome: 'Correios', prazo: 'A Lau informa o valor e o prazo pelo WhatsApp', preco: 0, combinar: true }];
+      checkout.opts = [FRETE_COMBINAR];
     }
     checkout.loadingShip = false;
     if (checkout.opts.length === 1) checkout.ship = checkout.opts[0];
     renderSheet();
     const n = $('numero'); if (n && !checkout.shipError) n.focus();
   }
+
+  const FRETE_COMBINAR = { id: 'correios-combinar', nome: 'Correios', prazo: 'A Lau informa o valor e o prazo pelo WhatsApp', preco: 0, combinar: true };
 
   // ---------- Pagamento ----------
   function validate() {
@@ -433,7 +437,7 @@
   async function pay() {
     checkout.payError = '';
     if (!validate()) return;
-    if (!online()) {
+    if (!online() || checkout.ship.combinar) {
       if (!CFG.whatsapp) { checkout.payError = 'O WhatsApp da loja ainda não foi configurado.'; renderSheet(); return; }
       window.open(whatsappFallback(), '_blank', 'noopener');
       return;

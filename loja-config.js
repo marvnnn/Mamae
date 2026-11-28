@@ -2,7 +2,7 @@
 window.LOJA_CONFIG = {
   // Pagamento pelo Mercado Pago e frete pelo Melhor Envio. Deixe false até configurar as variáveis na Vercel;
   // enquanto estiver false, a cliente monta a sacola e o pedido é finalizado pelo WhatsApp.
-  pagamentoOnline: false,
+  pagamentoOnline: true,
 
   // Endereço das funções do servidor (pasta /api).
   apiBase: location.protocol === 'file:' ? '' : '/api',
