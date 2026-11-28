@@ -125,3 +125,18 @@ test('notificarCliente: falha do Resend não derruba o webhook', async () => {
   const erro = console.error; console.error = () => {};
   try { await notificarCliente(ID, 'ok'); } finally { console.error = erro; }
 });
+
+test('enviarEmail tem limite de tempo (não trava o webhook)', async () => {
+  process.env.RESEND_API_KEY = 're_teste';
+  const chamadas = fakeFetch(() => ({ status: 200, body: {} }));
+  await enviarEmail({ para: 'c@ex.com', assunto: 'A', html: 'h', texto: 't' });
+  assert.ok(chamadas[0].opts.signal instanceof AbortSignal);
+});
+
+test('mostra o prazo da entrega', () => {
+  const p = pedidoBase();
+  p.entrega = { nome: 'Entrega da Lau em Brumadinho', prazo: 'Combinada pelo WhatsApp depois do pagamento' };
+  const { html, texto } = montarEmail(p, 'ok', SITE);
+  assert.ok(html.includes('Combinada pelo WhatsApp depois do pagamento'));
+  assert.ok(texto.includes('Combinada pelo WhatsApp depois do pagamento'));
+});

@@ -65,7 +65,7 @@ function montarEmail(pedido, tipo, siteUrl) {
       ${linhaValor('Subtotal', pedido.subtotal)}${linhaValor('Frete', pedido.frete)}${linhaValor('Total', pedido.total, true)}
     </table>
     <p style="margin:24px 0 4px;color:#8d8577;font-size:12px;letter-spacing:2px">ENTREGA</p>
-    <p style="margin:0;color:#d6cfc2;font-size:14px;line-height:1.6">${[entrega.nome, ...end].filter(Boolean).map(esc).join('<br>')}</p>
+    <p style="margin:0;color:#d6cfc2;font-size:14px;line-height:1.6">${[entrega.nome, entrega.prazo, ...end].filter(Boolean).map(esc).join('<br>')}</p>
     <p style="margin:28px 0 12px;color:#d6cfc2;font-size:14px;line-height:1.6">${esc(ajuda)}</p>
     <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto"><tr><td style="background:${OURO};border-radius:2px">
       <a href="${esc(wa)}" style="display:inline-block;padding:14px 26px;color:${PRETO};font-family:Arial,sans-serif;font-size:14px;font-weight:bold;text-decoration:none">Falar com a Lau no WhatsApp</a>
@@ -94,7 +94,7 @@ function montarEmail(pedido, tipo, siteUrl) {
     `Total: ${brl(pedido.total)}`,
     '',
     'Entrega:',
-    ...[entrega.nome, ...end].filter(Boolean),
+    ...[entrega.nome, entrega.prazo, ...end].filter(Boolean),
     '',
     ajuda,
     `WhatsApp: ${wa}`,
@@ -110,6 +110,7 @@ async function enviarEmail({ para, assunto, html, texto }) {
     method: 'POST',
     headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ from: EMAIL_REMETENTE, to: [para], reply_to: EMAIL_RESPOSTA, subject: assunto, html, text: texto }),
+    signal: AbortSignal.timeout(5000), // o webhook não pode passar do limite da Vercel
   });
   if (!r.ok) throw new Error(`Resend ${r.status}: ${(await r.text().catch(() => '')).slice(0, 300)}`);
 }
