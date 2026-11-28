@@ -692,6 +692,12 @@
             <div class="acts"><button class="btn gold" data-act="catalogo">Gerar catálogo da loja</button></div>`}
           <div class="acts"><a class="btn line" href="index.html" target="_blank" rel="noopener">Abrir a loja</a></div>
         </section>
+        ${APP.instalado ? '' : `<section class="box"><h3>Aplicativo no celular</h3>
+          ${APP.prompt ? `<p>Instale o painel como aplicativo: ele ganha um ícone na tela inicial e abre direto, sem precisar do navegador.</p>
+            <div class="acts"><button class="btn gold" data-act="instalar">Instalar aplicativo</button></div>`
+          : APP.ios ? `<p>Para ter o painel como aplicativo no iPhone, abra esta página no <b>Safari</b>, toque em <b>Compartilhar</b> (o quadrado com a seta para cima) e depois em <b>Adicionar à Tela de Início</b>.</p>`
+          : `<p>Para ter o painel como aplicativo no Android, abra esta página no <b>Chrome</b>, toque no menu <b>⋮</b> e depois em <b>Instalar app</b> (ou <b>Adicionar à tela inicial</b>).</p>`}
+        </section>`}
         <section class="box"><h3>Backup</h3>
           <p>Baixa um arquivo com todas as peças e vendas${nuvem() ? ' e pedidos' : ''}. Guarde no Google Drive ou no e-mail.</p>
           <div class="acts"><button class="btn line" data-act="exportar">Baixar backup</button></div>
@@ -782,7 +788,18 @@
   /* ================================================================== */
   /* Eventos                                                             */
   /* ================================================================== */
+  // App no celular: o Android oferece a instalação por evento; no iPhone ela é feita pelo menu Compartilhar do Safari.
+  const APP = {
+    prompt: null,
+    ios: /iphone|ipad|ipod/i.test(navigator.userAgent),
+    instalado: matchMedia('(display-mode: standalone)').matches || navigator.standalone === true,
+  };
+  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw-painel.js', { scope: './painel.html' }).catch(() => {});
+  addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); APP.prompt = e; if (S.pagina === 'ajustes') render(); });
+  addEventListener('appinstalled', () => { APP.prompt = null; APP.instalado = true; if (S.pagina === 'ajustes') render(); toast('Aplicativo instalado. Procure "Painel Lau" na tela inicial.'); });
+
   const ACOES = {
+    instalar: async () => { if (!APP.prompt) return; APP.prompt.prompt(); await APP.prompt.userChoice.catch(() => {}); APP.prompt = null; if (S.pagina === 'ajustes') render(); },
     nova: () => abrirEditor(null),
     editar: (b) => abrirEditor(porId(b.dataset.id)),
     fst: (b) => { S.filtro.st = b.dataset.k; document.querySelectorAll('[data-act=fst]').forEach(x => x.setAttribute('aria-pressed', x === b)); renderLista(); },

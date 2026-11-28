@@ -1,0 +1,18 @@
+{
+  "name": "Painel da Lau · LauSemijoias",
+  "short_name": "Painel Lau",
+  "description": "Peças, vendas e pedidos da LauSemijoias.",
+  "lang": "pt-BR",
+  "id": "/painel.html",
+  "start_url": "/painel.html",
+  "scope": "/painel.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#050403",
+  "theme_color": "#050403",
+  "icons": [
+    { "src": "/img/app-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/img/app-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/img/app-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
