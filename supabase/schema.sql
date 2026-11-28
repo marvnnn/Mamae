@@ -240,6 +240,20 @@ revoke execute on function cancelar_venda_balcao(uuid) from public, anon;
 grant execute on function vender_balcao(uuid[], text, numeric, text, integer) to authenticated;
 grant execute on function cancelar_venda_balcao(uuid) to authenticated;
 
+-- ---------- Permissões das tabelas ----------
+-- Projetos novos do Supabase não liberam as tabelas sozinhos. Quem decide o que cada um vê são as regras (RLS) acima;
+-- aqui só se libera o acesso básico: usuário logado passa pelas regras de admin, e o servidor (service_role) acessa tudo.
+grant usage on schema public to anon, authenticated, service_role;
+revoke truncate, references, trigger on all tables in schema public from anon, authenticated;
+grant select on admins to authenticated;
+grant select, insert, update, delete on produtos, pedidos, pedido_itens, vendas to authenticated;
+grant all on all tables in schema public to service_role;
+grant usage, select on all sequences in schema public to authenticated, service_role;
+grant execute on function is_admin() to anon, authenticated, service_role;
+grant execute on function reservar_produtos(uuid[], integer) to service_role;
+grant execute on function confirmar_pagamento(uuid, text, text) to service_role;
+grant execute on function liberar_pedido(uuid, text) to service_role;
+
 -- ---------- Fotos ----------
 -- Bucket público para as fotos das peças; só a admin envia ou apaga.
 insert into storage.buckets (id, name, public) values ('fotos', 'fotos', true) on conflict (id) do nothing;
