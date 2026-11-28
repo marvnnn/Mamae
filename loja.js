@@ -182,6 +182,7 @@
         <button class="btn ${has ? 'ghost' : ''}" data-add="${esc(p.id)}">${has ? 'Tirar da sacola' : 'Pôr na sacola'}</button>
         <ul>
           <li>Peça única: depois de vendida, sai da vitrine.</li>
+          <li>Para reservar, é preciso comprar. A peça só fica guardada para você depois do pagamento.</li>
           <li>Entrega em ${esc(LOCAL.nome)} ${LOCAL.taxa ? `por ${money(LOCAL.taxa)}` : 'grátis'} ou Correios para o Brasil todo.</li>
         </ul>
       </div>`;
@@ -280,7 +281,7 @@
           <div class="th">${photo(p)}</div>
           <div><strong>${esc(p.name)}</strong><small>${esc(p.material)} · ${esc(p.code)}</small></div>
           <div class="r"><b>${money(p.sellPrice)}</b><button class="rm" data-add="${esc(p.id)}">Tirar</button></div>
-        </div>`).join('');
+        </div>`).join('') + `<p class="notice" style="margin:16px 0 0">A sacola não reserva as peças. Para reservar, é preciso comprar: a peça fica guardada para você a partir do pagamento.</p>`;
       $('sheetFoot').innerHTML = `${summary()}<button class="btn full" data-step="ship">Escolher a entrega</button>`;
       return;
     }
