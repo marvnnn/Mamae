@@ -6,7 +6,8 @@
 //   MELHOR_ENVIO_TOKEN                              token do Melhor Envio (permissão shipping-calculate)
 //   MELHOR_ENVIO_SANDBOX=1                          opcional, para testar no ambiente de teste do Melhor Envio
 //   CONTATO_EMAIL                                   e-mail técnico exigido pelo Melhor Envio no User-Agent
-//   SITE_URL                                        ex.: https://lausemijoias.com.br (sem barra no fim)
+//   SITE_URL                                        ex.: https://www.lausemijoias.com.br (sem barra no fim)
+//   RESEND_API_KEY                                  Resend (e-mail de confirmação do pedido); sem ela, o e-mail não é enviado
 
 const CIDADE_LOCAL = { nome: 'Brumadinho', uf: 'MG', taxa: 10 };
 // CEP de onde as encomendas saem (rua da agência dos Correios no Centro de Brumadinho).
@@ -17,6 +18,10 @@ const PARCELAS_MAX = 6;
 // Caixa pequena para joias (mínimo aceito pelos Correios), em cm.
 const CAIXA = { width: 11, height: 4, length: 16 };
 const EMBALAGEM_G = 120;
+// Contato da loja (públicos): usados no e-mail de confirmação do pedido.
+const LOJA_WHATSAPP = '5531999431468';
+const EMAIL_RESPOSTA = 'contatolausemi@gmail.com';
+const EMAIL_REMETENTE = 'LauSemijoias <pedidos@lausemijoias.com.br>';
 
 function env(name) {
   const v = process.env[name];
@@ -126,6 +131,6 @@ async function cotarFrete(cep, produtos) {
 }
 
 module.exports = {
-  CIDADE_LOCAL, RESERVA_MINUTOS, PARCELAS_MAX,
+  CIDADE_LOCAL, RESERVA_MINUTOS, PARCELAS_MAX, LOJA_WHATSAPP, EMAIL_RESPOSTA, EMAIL_REMETENTE,
   env, send, readJson, digits, isUuid, round2, db, rpc, produtosPorIds, cotarFrete,
 };

@@ -53,6 +53,7 @@ Use sempre o mesmo endereço: os dados do painel ficam salvos por endereço e po
    | `MELHOR_ENVIO_TOKEN` | token do Melhor Envio |
    | `CONTATO_EMAIL` | e-mail técnico (exigido pelo Melhor Envio) |
    | `SITE_URL` | endereço do site, sem barra no fim |
+   | `RESEND_API_KEY` | chave do Resend (e-mail de confirmação do pedido para a cliente) |
 
 5. Em `loja-config.js`, preencha `supabaseUrl`, `supabaseAnonKey` (a chave *anon*, que é pública) e `whatsapp`. Quando as variáveis do Mercado Pago e do Melhor Envio estiverem na Vercel, mude `pagamentoOnline` para `true`.
 

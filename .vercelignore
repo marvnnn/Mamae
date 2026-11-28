@@ -3,3 +3,4 @@ docs/
 supabase/
 README.md
 jewelry-app.jsx
+api/*.test.js

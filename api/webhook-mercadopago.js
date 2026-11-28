@@ -2,6 +2,7 @@
 // Nunca confiamos no conteúdo da notificação: confirmamos a assinatura e buscamos o pagamento direto na API.
 const crypto = require('crypto');
 const { env, send, readJson, isUuid, rpc } = require('./_lib');
+const { notificarCliente } = require('./_email');
 
 // Valida o cabeçalho x-signature (Mercado Pago → Webhooks → Assinatura secreta).
 function assinaturaValida(req, dataId) {
@@ -35,6 +36,7 @@ module.exports = async (req, res) => {
 
     if (pag.status === 'approved') {
       const resultado = await rpc('confirmar_pagamento', { p_pedido: pedido, p_payment: String(pag.id), p_status: pag.status });
+      await notificarCliente(pedido, resultado); // só envia na primeira confirmação (ok/conflito); nunca lança
       return send(res, 200, { resultado });
     }
     // Cartão recusado não cancela: a cliente pode tentar outro cartão até a reserva vencer.
