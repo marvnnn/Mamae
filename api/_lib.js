@@ -5,11 +5,13 @@
 //   MP_WEBHOOK_SECRET                               assinatura secreta das notificações (Webhooks) do Mercado Pago
 //   MELHOR_ENVIO_TOKEN                              token do Melhor Envio (permissão shipping-calculate)
 //   MELHOR_ENVIO_SANDBOX=1                          opcional, para testar no ambiente de teste do Melhor Envio
-//   CEP_ORIGEM                                      CEP de onde a Lau posta as encomendas
 //   CONTATO_EMAIL                                   e-mail técnico exigido pelo Melhor Envio no User-Agent
 //   SITE_URL                                        ex.: https://lausemijoias.com.br (sem barra no fim)
 
 const CIDADE_LOCAL = { nome: 'Brumadinho', uf: 'MG', taxa: 0 }; // TESTE: voltar para 10 depois
+// CEP de onde as encomendas saem (rua da agência dos Correios no Centro de Brumadinho).
+// Precisa ser CEP de rua: os terminados em 9xx (agência, caixa postal) são recusados pelo Melhor Envio.
+const CEP_ORIGEM = '32480030';
 const RESERVA_MINUTOS = 30;
 const PARCELAS_MAX = 6;
 // Caixa pequena para joias (mínimo aceito pelos Correios), em cm.
@@ -104,7 +106,7 @@ async function cotarFrete(cep, produtos) {
       'User-Agent': `LauSemijoias (${env('CONTATO_EMAIL')})`,
     },
     body: JSON.stringify({
-      from: { postal_code: digits(env('CEP_ORIGEM')) },
+      from: { postal_code: CEP_ORIGEM },
       to: { postal_code: end.cep },
       package: { ...CAIXA, weight: Math.max(pesoKg, 0.3) },
       options: { insurance_value: round2(valor), receipt: false, own_hand: false },

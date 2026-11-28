@@ -51,7 +51,6 @@ Use sempre o mesmo endereço: os dados do painel ficam salvos por endereço e po
    | `MP_ACCESS_TOKEN` | Access Token de produção do Mercado Pago |
    | `MP_WEBHOOK_SECRET` | assinatura secreta do webhook |
    | `MELHOR_ENVIO_TOKEN` | token do Melhor Envio |
-   | `CEP_ORIGEM` | CEP de onde a Lau posta |
    | `CONTATO_EMAIL` | e-mail técnico (exigido pelo Melhor Envio) |
    | `SITE_URL` | endereço do site, sem barra no fim |
 
