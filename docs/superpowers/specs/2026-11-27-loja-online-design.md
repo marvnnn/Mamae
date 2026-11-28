@@ -55,7 +55,7 @@ Cliente ──► index.html + loja.js (estático, Vercel)
 
 ## Estado atual (feito nesta etapa)
 
-- `index.html` + `loja.js` + `loja-config.js`: vitrine nova (preto e dourado, Bodoni Moda + Hanken Grotesk), detalhe da peça com galeria, sacola em 3 passos (sacola → entrega → dados), detecção de Brumadinho por CEP, validação, plano B pelo WhatsApp.
+- `index.html` + `loja.js` + `loja-config.js`: vitrine nova (preto e dourado, Marcellus nos títulos + Figtree nos textos, escolhidas pelo usuário), detalhe da peça com galeria, sacola em 3 passos (sacola → entrega → dados), detecção de Brumadinho por CEP, validação, plano B pelo WhatsApp.
 - **Modo prévia**: sem servidor configurado (`apiBase` vazio ou arquivo aberto direto), a loja lê o `catalogo.js` exportado pelo painel e finaliza o pedido pelo WhatsApp. Com o servidor, troca sozinha para pagamento online.
 - `api/`: `frete`, `checkout`, `webhook-mercadopago`, `pedido`.
 - `supabase/schema.sql`: tabelas, view pública, RLS, funções de reserva/confirmação, bucket de fotos.
