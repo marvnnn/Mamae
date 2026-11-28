@@ -111,7 +111,7 @@ async function cotarFrete(cep, produtos) {
       services: '1,2', // 1 = PAC, 2 = SEDEX (Correios)
     }),
   });
-  if (!r.ok) throw new Error(`Melhor Envio ${r.status}`);
+  if (!r.ok) throw new Error(`Melhor Envio ${r.status}: ${(await r.text().catch(() => '')).slice(0, 300)}`);
   const lista = await r.json();
   const opcoes = (Array.isArray(lista) ? lista : [])
     .filter(s => !s.error && s.price)
