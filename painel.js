@@ -249,9 +249,13 @@
       <div class="field"><span>Fotos</span><div class="photos" id="phs"></div><small>A primeira foto é a capa na loja. Fundo liso e luz natural deixam a peça mais bonita.</small></div>
       <label class="field"><span>Nome</span><input class="inp" id="eNome" value="${esc(E.p.nome)}" placeholder="Ex.: Brinco gota zircônia" maxlength="80"></label>
       <div class="row2">
-        <label class="field"><span>Tipo</span><select class="inp" id="eTipo" ${novo ? '' : 'disabled'}>${D.TIPOS.map(t => `<option ${E.p.tipo === t.label ? 'selected' : ''}>${t.label}</option>`).join('')}</select>
-          <small id="eCod">${novo ? `Vai receber o código ${esc(codigoPrevisto(E.p.tipo))}` : `Código ${esc(E.p.codigo)}`}</small></label>
+        <label class="field"><span>Código</span><input class="inp" id="eCodigo" value="${esc(novo ? codigoPrevisto(E.p.tipo) : E.p.codigo)}" maxlength="20" autocapitalize="characters" autocomplete="off" spellcheck="false" style="text-transform:uppercase;font-weight:600;color:var(--gold-l)">
+          <small>${novo ? 'Sugestão automática. Pode trocar pelo código da etiqueta.' : 'O código da etiqueta da peça.'}</small></label>
+        <label class="field"><span>Tipo</span><select class="inp" id="eTipo">${D.TIPOS.map(t => `<option ${E.p.tipo === t.label ? 'selected' : ''}>${t.label}</option>`).join('')}</select></label>
+      </div>
+      <div class="row2">
         <label class="field"><span>Material</span><select class="inp" id="eMat">${[...new Set([...D.MATERIAIS, E.p.material])].map(m => `<option ${E.p.material === m ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select></label>
+        <span></span>
       </div>
       <div class="row2">
         <label class="field"><span>Preço de venda</span><span class="money"><input class="inp" id="ePreco" inputmode="decimal" value="${moneyInput(E.p.preco)}" placeholder="0,00"></span></label>
@@ -264,7 +268,12 @@
        ${!novo && st !== 'vendido' ? `<button class="btn quiet" data-act="excluir" aria-label="Excluir peça">${I.lixo}Excluir</button>` : ''}`);
     renderFotos();
     if (novo) $('eNome').focus();
-    $('eTipo').addEventListener('change', (e) => { E.p.tipo = e.target.value; $('eCod').textContent = `Vai receber o código ${codigoPrevisto(E.p.tipo)}`; });
+    // Enquanto ela não mexer no código, a sugestão acompanha o tipo escolhido.
+    let sugestao = novo ? $('eCodigo').value : null;
+    $('eTipo').addEventListener('change', (e) => {
+      E.p.tipo = e.target.value;
+      if (novo && $('eCodigo').value === sugestao) { sugestao = codigoPrevisto(E.p.tipo); $('eCodigo').value = sugestao; }
+    });
   }
 
   function codigoPrevisto(tipo) {
@@ -301,11 +310,17 @@
   function lerEditor() {
     const p = E.p;
     p.nome = $('eNome').value.trim();
+    p.codigo = $('eCodigo').value.toUpperCase().replace(/\s+/g, '');
+    p.tipo = $('eTipo').value;
     p.material = $('eMat').value;
     p.preco = parseMoney($('ePreco').value);
     p.custo = $('eCusto').value.trim() ? parseMoney($('eCusto').value) : 0;
     p.descricao = $('eDesc').value.trim();
     p.peso_g = Math.round(Number(digits($('ePeso').value))) || 30;
+    if (!p.codigo) return 'Informe o código da peça.';
+    if (!/^[A-Z0-9][A-Z0-9-]{0,19}$/.test(p.codigo)) return 'Use só letras, números e hífen no código (ex.: B07 ou COL-12).';
+    const dono = S.produtos.find(x => x.codigo.toUpperCase() === p.codigo && x.id !== p.id);
+    if (dono) return `O código ${p.codigo} já é da peça ${dono.nome}. Escolha outro.`;
     if (!p.nome) return 'Dê um nome para a peça.';
     if (!(p.preco > 0)) return 'Informe o preço de venda (ex.: 89,90).';
     if (!(p.custo >= 0)) return 'O custo precisa ser um valor como 35,00, ou fique em branco.';

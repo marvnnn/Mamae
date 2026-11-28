@@ -20,7 +20,7 @@ e mostrar os **pedidos online** para ela enviar.
 - **Venda no balcão é atômica no banco** (`vender_balcao`): confere se as peças estão à venda, marca como vendidas e
   registra a venda numa transação. Peça reservada por um pagamento online não pode ser vendida no balcão.
 - **Venda pode ser desfeita** (`cancelar_venda_balcao`): as peças voltam para a loja.
-- **Peças vendidas ficam no histórico** (situação "vendida") em vez de serem apagadas. **Códigos não são reaproveitados**:
+- **Peças vendidas ficam no histórico** (situação "vendida") em vez de serem apagadas. **Cada peça tem seu código**, que a Lau pode digitar (o da etiqueta) e que não pode repetir. Ao cadastrar, o campo vem com uma sugestão automática que não reaproveita códigos:
   o próximo código é o maior do tipo + 1, para nunca confundir uma peça vendida com uma nova.
 - **Fotos**: reduzidas no próprio aparelho (lado maior 1600 px, JPEG) antes de enviar. A primeira é a capa.
   No modo navegador ficam guardadas no IndexedDB (menores, 1000 px).

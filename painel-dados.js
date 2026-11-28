@@ -133,7 +133,9 @@
         const novo = p.novo || !p.id;
         const { novo: _n, ...resto } = p;
         const item = { ...resto, id: p.id || Date.now().toString(), criado_em: p.criado_em || new Date().toISOString() };
-        if (novo) item.codigo = proximoCodigo(item.tipo, await this.codigosUsados());
+        const usados = (await this.listarProdutos()).filter(x => x.id !== item.id).map(x => String(x.codigo).toUpperCase());
+        if (!item.codigo) item.codigo = proximoCodigo(item.tipo, await this.codigosUsados());
+        if (usados.includes(String(item.codigo).toUpperCase())) throw new Error(`Já existe uma peça com o código ${item.codigo}.`);
         await tx('jewelry', 'readwrite', t => req(t.objectStore('jewelry').put(paraJoia(item))));
         return item;
       },
@@ -212,7 +214,7 @@
     if (/Invalid login credentials/i.test(m)) return 'E-mail ou senha incorretos.';
     if (/Email not confirmed/i.test(m)) return 'Confirme o e-mail pelo link que o Supabase enviou.';
     if (/Failed to fetch|NetworkError|network/i.test(m)) return 'Sem conexão com o servidor. Confira a internet.';
-    if (/duplicate key.*codigo/i.test(m)) return 'Já existe uma peça com esse código.';
+    if (/duplicate key.*codigo/i.test(m)) return 'Já existe uma peça com esse código. Escolha outro.';
     if (/violates foreign key/i.test(m)) return 'Esta peça faz parte de um pedido online e não pode ser excluída.';
     if (/sem permissão|permission denied|row-level security/i.test(m)) return 'Esta conta não tem permissão para isso.';
     return m || 'Algo deu errado. Tente de novo.';
@@ -256,14 +258,18 @@
       },
       async salvarProduto(p) {
         const campos = {
-          nome: p.nome, tipo: p.tipo, material: p.material, descricao: p.descricao || '',
+          codigo: p.codigo, nome: p.nome, tipo: p.tipo, material: p.material, descricao: p.descricao || '',
           preco: num(p.preco), custo: num(p.custo), fotos: p.fotos || [], peso_g: Math.max(1, Math.round(num(p.peso_g) || 30)),
         };
         if (p.id && !p.novo) {
           const [r] = await ok(sb.from('produtos').update({ ...campos, atualizado_em: new Date().toISOString() }).eq('id', p.id).select());
           return mapProduto(r);
         }
-        // Código novo: maior do tipo + 1. Se outra tela pegou o mesmo código ao mesmo tempo, tenta o próximo.
+        if (p.codigo) {
+          const [r] = await ok(sb.from('produtos').insert({ ...campos, id: p.id || undefined }).select());
+          return mapProduto(r);
+        }
+        // Sem código informado: maior do tipo + 1. Se outra tela pegou o mesmo código ao mesmo tempo, tenta o próximo.
         for (let tentativa = 0; tentativa < 4; tentativa++) {
           const codigo = proximoCodigo(p.tipo, await this.codigosUsados());
           const { data, error } = await sb.from('produtos').insert({ ...campos, id: p.id || undefined, codigo }).select();
