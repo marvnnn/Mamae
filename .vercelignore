@@ -1,0 +1,5 @@
+# Arquivos do repositório que não precisam ser servidos pelo site.
+docs/
+supabase/
+README.md
+jewelry-app.jsx

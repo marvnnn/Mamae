@@ -202,7 +202,11 @@
     if (window.supabase && window.supabase.createClient) return Promise.resolve();
     return new Promise((res, rej) => {
       const s = document.createElement('script');
-      s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+      // Versão fixa com verificação de integridade: se o arquivo do CDN for alterado, o navegador se recusa a rodar.
+      // Para atualizar: troque a versão e recalcule o hash (sha384) do arquivo novo.
+      s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.min.js';
+      s.integrity = 'sha384-7i/4BYWz4Mn+lJfg2HWfEPfZQ7tmFKF3CTSKlXBpxWjNlLjcg+T6smpHG4gLmU1u';
+      s.crossOrigin = 'anonymous';
       s.onload = res;
       s.onerror = () => rej(new Error('Sem conexão com o servidor. Confira a internet.'));
       document.head.appendChild(s);
