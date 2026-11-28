@@ -591,10 +591,13 @@
     if (ultimoDia > 28) faixas.push([29, ultimoDia]);
     const semanas = faixas.map(([a, b]) => ({ l: a === b ? `Dia ${a}` : `Dias ${a}–${b}`, v: vs.filter(v => { const d = new Date(v.criado_em).getDate(); return d >= a && d <= b; }).reduce((s, v) => s + v.total, 0) }));
     const maxS = Math.max(1, ...semanas.map(s => s.v));
+    // Faturamento por tipo: o desconto da venda é dividido entre as peças, para a pizza somar o mesmo que "Vendido".
     const tipos = {};
-    vs.forEach(v => v.itens.forEach(i => { const t = i.tipo || 'Outros'; tipos[t] = tipos[t] || { n: 0, v: 0 }; tipos[t].n++; tipos[t].v += i.preco; }));
-    const tl = Object.entries(tipos).sort((a, b) => b[1].n - a[1].n);
-    const maxT = Math.max(1, ...tl.map(([, x]) => x.n));
+    vs.forEach(v => {
+      const fator = v.subtotal > 0 ? v.total / v.subtotal : 1;
+      v.itens.forEach(i => { const t = i.tipo || 'Outros'; tipos[t] = tipos[t] || { n: 0, v: 0 }; tipos[t].n++; tipos[t].v += i.preco * fator; });
+    });
+    const tl = Object.entries(tipos).sort((a, b) => b[1].v - a[1].v);
 
     const estoque = S.produtos.filter(p => efetivo(p) !== 'vendido');
     const hoje = new Date();
@@ -611,7 +614,7 @@
       </div>
       ${vs.length ? `<div class="panels">
         <section class="panel"><h2>Por semana</h2>${semanas.map(s => `<div class="hbar"><span>${s.l}</span><span class="track"><span class="fill" style="width:${(s.v / maxS) * 100}%"></span></span><b>${money(s.v)}</b></div>`).join('')}</section>
-        <section class="panel"><h2>Por tipo de peça</h2>${tl.map(([t, x]) => `<div class="hbar"><span>${esc(t)}</span><span class="track"><span class="fill alt" style="width:${(x.n / maxT) * 100}%"></span></span><b>${x.n} ${x.n === 1 ? 'peça' : 'peças'}</b></div>`).join('')}</section>
+        <section class="panel"><h2>Faturamento por tipo</h2>${pizza(tl, total)}</section>
       </div>
       <h2 class="section-t">Vendas do mês</h2>
       <div class="list">${vs.map(v => `<button class="item" data-act="venda" data-id="${esc(v.id)}">
@@ -619,6 +622,30 @@
         <span class="t"><b>${esc(v.cliente || 'Cliente não informada')}</b><span>${v.itens.map(i => esc(i.codigo)).join(', ')}, ${esc(v.pagamento)}${v.parcelas > 1 ? ` em ${v.parcelas}x` : ''}</span></span>
         <span class="r"><b>${money(v.total)}</b><span class="st">${v.origem === 'online' ? 'Site' : 'Balcão'}</span></span></button>`).join('')}</div>`
       : `<div class="empty"><h3>Nenhuma venda em ${esc(nomeMes)}</h3><p>As vendas do balcão e do site aparecem aqui.</p>${atual ? '<a class="btn gold" href="#vender">Registrar uma venda</a>' : ''}</div>`}`;
+  }
+
+  // Pizza (rosca) em SVG: cada fatia é um arco do mesmo círculo. A legenda repete valor e porcentagem, para não depender só da cor.
+  const CORES_PIZZA = ['#E8D08A', '#8E7330', '#C9A84C', '#F4E7C1', '#6B5524', '#B89A55', '#7D7466'];
+  function pizza(lista, total) {
+    const soma = lista.reduce((s, [, x]) => s + x.v, 0) || 1;
+    const R = 48, C = 2 * Math.PI * R, folga = lista.length > 1 ? 1.2 : 0;
+    let ini = 0;
+    const fatias = lista.map(([t, x], k) => {
+      const len = (x.v / soma) * C;
+      const arco = `<circle cx="60" cy="60" r="${R}" fill="none" stroke="${CORES_PIZZA[k % CORES_PIZZA.length]}" stroke-width="20"
+        stroke-dasharray="${Math.max(len - folga, 0.01)} ${C}" stroke-dashoffset="${-ini}"><title>${esc(t)}: ${money(x.v)}</title></circle>`;
+      ini += len;
+      return arco;
+    }).join('');
+    const pct = (v) => `${Math.round((v / soma) * 100)}%`;
+    return `<div class="pizza">
+      <svg viewBox="0 0 120 120" role="img" aria-label="Faturamento por tipo de peça">
+        <g transform="rotate(-90 60 60)">${fatias}</g>
+        <text x="60" y="57" text-anchor="middle" class="pz-l">Total</text>
+        <text x="60" y="73" text-anchor="middle" class="pz-v">${money(total)}</text>
+      </svg>
+      <ul>${lista.map(([t, x], k) => `<li><i style="background:${CORES_PIZZA[k % CORES_PIZZA.length]}"></i><span>${esc(t)}<small>${x.n} ${x.n === 1 ? 'peça' : 'peças'}</small></span><b>${money(x.v)}</b><em>${pct(x.v)}</em></li>`).join('')}</ul>
+    </div>`;
   }
 
   function abrirVenda(id) {
