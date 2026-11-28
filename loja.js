@@ -13,7 +13,7 @@
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const digits = (s) => String(s || '').replace(/\D/g, '');
   const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
-  const online = () => !!CFG.apiBase;
+  const online = () => !!(CFG.pagamentoOnline && CFG.apiBase);
 
   // Desenhos de traço fino usados enquanto a peça não tem foto.
   const ART = {

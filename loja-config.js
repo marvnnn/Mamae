@@ -1,6 +1,10 @@
 // Configuração pública da LauSemijoias. Nada aqui é secreto: chaves secretas ficam só no servidor (variáveis da Vercel).
 window.LOJA_CONFIG = {
-  // Endereço das funções do servidor (pasta /api). Vazio = modo prévia: o pedido é finalizado pelo WhatsApp.
+  // Pagamento pelo Mercado Pago e frete pelo Melhor Envio. Deixe false até configurar as variáveis na Vercel;
+  // enquanto estiver false, a cliente monta a sacola e o pedido é finalizado pelo WhatsApp.
+  pagamentoOnline: false,
+
+  // Endereço das funções do servidor (pasta /api).
   apiBase: location.protocol === 'file:' ? '' : '/api',
 
   // Supabase. A chave "anon" é pública por definição; quem protege os dados são as regras (RLS) do banco.

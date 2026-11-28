@@ -55,7 +55,7 @@ Use sempre o mesmo endereço: os dados do painel ficam salvos por endereço e po
    | `CONTATO_EMAIL` | e-mail técnico (exigido pelo Melhor Envio) |
    | `SITE_URL` | endereço do site, sem barra no fim |
 
-5. Em `loja-config.js`, preencha `supabaseUrl`, `supabaseAnonKey` (a chave *anon*, que é pública) e `whatsapp`.
+5. Em `loja-config.js`, preencha `supabaseUrl`, `supabaseAnonKey` (a chave *anon*, que é pública) e `whatsapp`. Quando as variáveis do Mercado Pago e do Melhor Envio estiverem na Vercel, mude `pagamentoOnline` para `true`.
 
 > Nunca coloque a *service_role*, o Access Token ou os tokens em `loja-config.js` nem em nenhum arquivo do repositório. Eles ficam só nas variáveis da Vercel.
 
