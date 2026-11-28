@@ -3,7 +3,7 @@
 Loja online e painel de gestão da LauSemijoias, de Brumadinho (MG): prata 925 e semijoias.
 
 - **Loja** (`index.html`): vitrine para as clientes, com sacola, frete pelo CEP e pagamento pelo Mercado Pago (Pix ou cartão em até 6x).
-- **Painel** (`painel.html`): cadastro de peças, estoque, vendas de balcão, dashboard e backup.
+- **Painel** (`painel.html`): peças com fotos, venda no balcão, pedidos do site, resumo do mês e backup.
 
 O design e as decisões do projeto estão em [`docs/superpowers/specs/2026-11-27-loja-online-design.md`](docs/superpowers/specs/2026-11-27-loja-online-design.md).
 
@@ -17,12 +17,12 @@ O design e as decisões do projeto estão em [`docs/superpowers/specs/2026-11-27
 | `img/` | Marca em vetor (`marca.svg`, `marca-icone.svg`, `favicon.svg`) e a imagem que aparece ao compartilhar o link (`compartilhar.jpg`). |
 | `api/` | Funções do servidor (Vercel): frete, checkout, webhook do Mercado Pago e consulta de pedido. |
 | `supabase/schema.sql` | Banco de dados: tabelas, regras de acesso e funções de reserva e confirmação. |
-| `painel.html` | Painel da Lau (por enquanto salva no navegador, em IndexedDB). |
-| `jewelry-app.jsx` | Versão antiga do painel em componente React. |
+| `painel.html`, `painel.js`, `painel-dados.js` | Painel da Lau. Com o Supabase configurado, pede login e usa o mesmo estoque da loja; sem ele, guarda tudo neste navegador (IndexedDB). |
+| `jewelry-app.jsx` | Versão antiga do painel em componente React (não é mais usada). |
 
 ## Dois modos da loja
 
-**Modo prévia (funciona hoje, sem servidor).** No painel, em **Configurações → Loja Online**, informe o WhatsApp e clique em **Gerar Catálogo da Loja**. Coloque o `catalogo.js` baixado ao lado do `index.html`. A cliente monta a sacola, informa CEP e endereço, e o pedido é enviado pronto para o WhatsApp da Lau.
+**Modo prévia (funciona hoje, sem servidor).** No painel, em **Ajustes → Loja online**, informe o WhatsApp e toque em **Gerar catálogo da loja**. Coloque o `catalogo.js` baixado ao lado do `index.html`. A cliente monta a sacola, informa CEP e endereço, e o pedido é enviado pronto para o WhatsApp da Lau.
 
 **Modo online (pagamento no site).** Depois de configurar o Supabase, o Mercado Pago, o Melhor Envio e a Vercel (passo a passo abaixo), a loja passa a ler o estoque do banco e cobra pelo Mercado Pago.
 
@@ -61,4 +61,6 @@ Use sempre o mesmo endereço: os dados do painel ficam salvos por endereço e po
 
 ## Backup do painel
 
-Enquanto o painel ainda salva no navegador, faça backup com frequência em **Configurações → Exportar Dados**. Esse arquivo também será usado para importar o estoque para o Supabase.
+Em **Ajustes → Backup**, baixe uma cópia de tudo de tempos em tempos.
+
+Para levar o estoque do painel antigo para o Supabase: no painel antigo (ou no novo, antes de configurar o Supabase), baixe o backup; depois de configurar o Supabase, entre no painel e use **Ajustes → Trazer dados do painel antigo**. Códigos que já existem são pulados. As fotos precisam ser colocadas de novo, peça por peça.

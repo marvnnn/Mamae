@@ -156,7 +156,7 @@ begin
   update pedidos set status = 'pago', mp_payment_id = p_payment, mp_status = p_status, pago_em = now() where id = p_pedido;
   insert into vendas (origem, pedido_id, cliente, itens, subtotal, total, pagamento)
   select 'online', ped.id, ped.cliente_nome,
-    (select jsonb_agg(jsonb_build_object('produto_id', p.id, 'codigo', p.codigo, 'nome', p.nome, 'preco', i.preco, 'custo', p.custo))
+    (select jsonb_agg(jsonb_build_object('produto_id', p.id, 'codigo', p.codigo, 'nome', p.nome, 'tipo', p.tipo, 'preco', i.preco, 'custo', p.custo))
        from pedido_itens i join produtos p on p.id = i.produto_id where i.pedido_id = ped.id),
     ped.subtotal, ped.total, 'Mercado Pago';
   return 'ok';
@@ -178,9 +178,72 @@ revoke execute on function reservar_produtos(uuid[], integer) from public, anon,
 revoke execute on function confirmar_pagamento(uuid, text, text) from public, anon, authenticated;
 revoke execute on function liberar_pedido(uuid, text) from public, anon, authenticated;
 
+-- ---------- Funções do painel (só a admin) ----------
+
+-- Venda no balcão: confere, marca as peças como vendidas e registra a venda, tudo junto.
+-- Peça reservada por um pagamento online em andamento não pode ser vendida.
+create or replace function vender_balcao(p_ids uuid[], p_cliente text, p_desconto numeric, p_pagamento text, p_parcelas integer)
+returns uuid language plpgsql security definer set search_path = public as $$
+declare
+  v_id uuid;
+  v_ids uuid[];
+  v_faltando integer;
+  v_sub numeric;
+  v_desc numeric;
+  v_itens jsonb;
+begin
+  if not is_admin() then raise exception 'sem permissão' using errcode = '42501'; end if;
+  select coalesce(array_agg(distinct i), '{}') into v_ids from unnest(p_ids) as i;
+  if coalesce(array_length(v_ids, 1), 0) = 0 then raise exception 'venda sem peças'; end if;
+  if p_pagamento not in ('Pix', 'Dinheiro', 'Débito', 'Crédito') then raise exception 'forma de pagamento inválida'; end if;
+
+  perform 1 from produtos where id = any(v_ids) for update;
+  select count(*) into v_faltando from unnest(v_ids) as i
+  where not exists (
+    select 1 from produtos p
+    where p.id = i and (p.status = 'disponivel' or (p.status = 'reservado' and p.reservado_ate < now()))
+  );
+  if v_faltando > 0 then
+    raise exception 'indisponivel' using hint = 'Uma ou mais peças já foram vendidas ou estão reservadas num pagamento online.';
+  end if;
+
+  select sum(preco), jsonb_agg(jsonb_build_object('produto_id', id, 'codigo', codigo, 'nome', nome, 'tipo', tipo, 'preco', preco, 'custo', custo))
+    into v_sub, v_itens
+  from produtos where id = any(v_ids);
+  v_desc := least(greatest(coalesce(p_desconto, 0), 0), v_sub);
+
+  update produtos set status = 'vendido', reservado_ate = null, atualizado_em = now() where id = any(v_ids);
+  insert into vendas (origem, cliente, itens, subtotal, desconto, total, pagamento, parcelas)
+  values ('balcao', left(coalesce(p_cliente, ''), 120), v_itens, v_sub, v_desc, v_sub - v_desc, p_pagamento,
+          case when p_pagamento = 'Crédito' then least(greatest(coalesce(p_parcelas, 1), 1), 12) else 1 end)
+  returning id into v_id;
+  return v_id;
+end $$;
+
+-- Desfaz uma venda de balcão lançada por engano: as peças voltam para a loja.
+create or replace function cancelar_venda_balcao(p_venda uuid)
+returns void language plpgsql security definer set search_path = public as $$
+declare
+  v vendas;
+begin
+  if not is_admin() then raise exception 'sem permissão' using errcode = '42501'; end if;
+  select * into v from vendas where id = p_venda for update;
+  if not found then raise exception 'venda não encontrada'; end if;
+  if v.origem <> 'balcao' then raise exception 'vendas online são canceladas pelo Mercado Pago'; end if;
+  update produtos set status = 'disponivel', atualizado_em = now()
+  where status = 'vendido' and id in (select (x->>'produto_id')::uuid from jsonb_array_elements(v.itens) as x where x->>'produto_id' is not null);
+  delete from vendas where id = p_venda;
+end $$;
+
+revoke execute on function vender_balcao(uuid[], text, numeric, text, integer) from public, anon;
+revoke execute on function cancelar_venda_balcao(uuid) from public, anon;
+grant execute on function vender_balcao(uuid[], text, numeric, text, integer) to authenticated;
+grant execute on function cancelar_venda_balcao(uuid) to authenticated;
+
 -- ---------- Fotos ----------
 -- Bucket público para as fotos das peças; só a admin envia ou apaga.
 insert into storage.buckets (id, name, public) values ('fotos', 'fotos', true) on conflict (id) do nothing;
+create policy "admin lista fotos" on storage.objects for select using (bucket_id = 'fotos' and is_admin());
 create policy "admin envia fotos" on storage.objects for insert with check (bucket_id = 'fotos' and is_admin());
 create policy "admin altera fotos" on storage.objects for update using (bucket_id = 'fotos' and is_admin());
 create policy "admin apaga fotos" on storage.objects for delete using (bucket_id = 'fotos' and is_admin());
