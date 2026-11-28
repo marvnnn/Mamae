@@ -16,7 +16,7 @@ window.LOJA_CONFIG = {
   whatsapp: '5531999431468',
 
   // Entrega local
-  cidadeLocal: { nome: 'Brumadinho', uf: 'MG', taxa: 10 },
+  cidadeLocal: { nome: 'Brumadinho', uf: 'MG', taxa: 5 },
 
   parcelasMax: 6,
 };

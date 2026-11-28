@@ -9,7 +9,7 @@
 //   SITE_URL                                        ex.: https://www.lausemijoias.com.br (sem barra no fim)
 //   RESEND_API_KEY                                  Resend (e-mail de confirmação do pedido); sem ela, o e-mail não é enviado
 
-const CIDADE_LOCAL = { nome: 'Brumadinho', uf: 'MG', taxa: 10 };
+const CIDADE_LOCAL = { nome: 'Brumadinho', uf: 'MG', taxa: 5 };
 // CEP de onde as encomendas saem (rua da agência dos Correios no Centro de Brumadinho).
 // Precisa ser CEP de rua: os terminados em 9xx (agência, caixa postal) são recusados pelo Melhor Envio.
 const CEP_ORIGEM = '32480030';

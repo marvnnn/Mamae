@@ -2,7 +2,7 @@
 // O navegador só monta o pedido. Preço, estoque e frete são sempre recalculados no servidor (/api/checkout).
 (function () {
   const CFG = window.LOJA_CONFIG || {};
-  const LOCAL = CFG.cidadeLocal || { nome: 'Brumadinho', uf: 'MG', taxa: 10 };
+  const LOCAL = CFG.cidadeLocal || { nome: 'Brumadinho', uf: 'MG', taxa: 5 };
   const PARC = CFG.parcelasMax || 6;
   const BAG_KEY = 'lauSemijoiasSacola';
   const FORM_KEY = 'lauSemijoiasCliente';
